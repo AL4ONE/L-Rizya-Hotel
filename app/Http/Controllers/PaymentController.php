@@ -12,7 +12,6 @@ class PaymentController extends Controller
 
     public function submitPaymentProof(Request $request)
     {
-        // Validasi input
         $validator = Validator::make($request->all(), [
             'booking_code' => 'required|exists:bookings,booking_code',
             'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:2048',

@@ -33,7 +33,6 @@ class BookingController extends Controller
 
         $data = $validator->validated();
 
-        // ✅ Cek konflik booking
         $existingBookings = Booking::where('room_id', $data['room_id'])->get();
 
         foreach ($existingBookings as $booking) {
