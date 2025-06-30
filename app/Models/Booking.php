@@ -17,4 +17,10 @@ class Booking extends Model
     {
         return $this->hasOne(Payment::class, 'booking_code', 'booking_code');
     }
+
+    public function room()
+{
+    return $this->belongsTo(Room::class);
+}
+
 }

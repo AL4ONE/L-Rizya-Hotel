@@ -8,7 +8,18 @@ use Illuminate\Support\Facades\Validator;
 
 class RoomFacilityController extends Controller
 {
-    public function store(Request $request){
+    public function index()
+    {
+        
+        return response()->json([
+            'status' => 200,
+            'message' => 'room facilities fetched successfully',
+            'data' => RoomFacility::all(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => "required|unique:room_facilities,name",
         ]);
@@ -20,6 +31,7 @@ class RoomFacilityController extends Controller
                 'errors' => $validator->errors()
             ]);
         }
+
         $validated = $validator->validated();
         $facilities = RoomFacility::create($validated);
 

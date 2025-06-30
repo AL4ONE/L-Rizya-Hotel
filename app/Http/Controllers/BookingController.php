@@ -59,7 +59,7 @@ class BookingController extends Controller
         $data['total_price'] = $totalPrice;
 
         Booking::create($data);
-
+        
         return response()->json([
             'status' => 200,
             'message' => "data created success",
@@ -71,13 +71,15 @@ class BookingController extends Controller
     }
 
 
-    public function getAll(){
-        $bookings = Booking::all();
-
+    public function getAll() {
+        $bookings = Booking::with('room')->get();
+    
         return response()->json([
             'status' => 200,
             'message' => 'data catch successfully',
             'data' => $bookings,
         ]);
     }
+    
+    
 }
