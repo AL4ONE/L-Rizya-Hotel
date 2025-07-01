@@ -10,7 +10,6 @@ class RoomFacilityController extends Controller
 {
     public function index()
     {
-        
         return response()->json([
             'status' => 200,
             'message' => 'room facilities fetched successfully',

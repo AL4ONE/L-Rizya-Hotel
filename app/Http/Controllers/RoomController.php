@@ -11,18 +11,14 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $rooms = Room::all();
-
-        return response()->json([
-            'status' => 200,
-            'message' => "get data success",
-            'data' => $rooms,
-        ]);
+        $rooms = Room::with('room_facilities')->get();
+        return response()->json(['data' => $rooms]);
     }
+
 
     public function show($id)
     {
-        $roomData = Room::with('roomFacilities')->findOrFail($id);
+        $roomData = Room::with('room_facilities')->findOrFail($id);
 
         return response()->json([
             'status' => 200,
@@ -92,13 +88,13 @@ class RoomController extends Controller
         $room = Room::create($validated);
 
         if (!empty($facilities)) {
-            $room->roomFacilities()->attach($facilities);
+            $room->room_facilities()->attach($facilities);
         }
 
         return response()->json([
             'status' => 200,
             'message' => "Room created successfully",
-            'data' => $room->load('roomFacilities'),
+            'data' => $room->load('room_facilities'),
         ]);
     }
 
@@ -149,13 +145,13 @@ class RoomController extends Controller
         $room->update($validated);
 
         if (isset($validated['facilities'])) {
-            $room->roomFacilities()->sync($validated['facilities']);
+            $room->room_facilities()->sync($validated['facilities']);
         }
 
         return response()->json([
             'status' => 200,
             'message' => 'Room updated successfully',
-            'data' => $room->load('roomFacilities'),
+            'data' => $room->load('room_facilities'),
         ]);
     }
 
