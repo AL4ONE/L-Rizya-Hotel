@@ -27,4 +27,5 @@ Route::middleware(adminMiddleware::class)->group(function() {
     Route::delete('/rooms/{id}', [RoomController::class, 'destroy']);
     Route::put('/rooms/{id}', [RoomController::class, 'update']);
     Route::post('/facilities', [RoomFacilityController::class, 'store']);
+    Route::delete('/facilities/{id}', [RoomFacilityController::class, 'destroy']);
 });

@@ -40,4 +40,15 @@ class RoomFacilityController extends Controller
             'data' => $facilities
         ]);
     }
+
+    public function destroy($id)
+    {
+        $facility = RoomFacility::findOrFail($id);
+        $facility->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Facility deleted successfully',
+        ]);
+    }
 }

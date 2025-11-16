@@ -18,7 +18,7 @@ class BookingController extends Controller
             'last_name' => 'required|string',
             'phone' => 'required|string',
             'email' => 'required|email',
-            'check_in' => 'required|date',
+            'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
             'personal_request' => 'nullable|string'
         ]);
@@ -33,15 +33,34 @@ class BookingController extends Controller
 
         $data = $validator->validated();
 
+        // Validate dates are not in the past
+        $today = Carbon::today();
+        $checkInDate = Carbon::parse($data['check_in']);
+        $checkOutDate = Carbon::parse($data['check_out']);
+
+        if ($checkInDate->lt($today)) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Check-in date cannot be in the past.',
+            ], 422);
+        }
+
+        // Check for overlapping bookings
         $existingBookings = Booking::where('room_id', $data['room_id'])->get();
 
         foreach ($existingBookings as $booking) {
+            $existingCheckIn = Carbon::parse($booking->check_in);
+            $existingCheckOut = Carbon::parse($booking->check_out);
+
+            // Check if dates overlap
+            // Overlap occurs if: new_check_in < existing_check_out AND new_check_out > existing_check_in
             if (
-                $data['check_in'] <= $booking->check_out &&
-                $data['check_out'] >= $booking->check_in
+                $checkInDate->lt($existingCheckOut) &&
+                $checkOutDate->gt($existingCheckIn)
             ) {
                 return response()->json([
-                    'message' => 'Kamar sudah dibooking di tanggal tersebut.'
+                    'status' => 409,
+                    'message' => 'Kamar sudah dibooking di tanggal tersebut. Silakan pilih tanggal lain.'
                 ], 409);
             }
         }
@@ -49,16 +68,13 @@ class BookingController extends Controller
         $room = Room::find($data['room_id']);
         $pricePerNight = $room->price_per_night;
 
-        $checkIn = Carbon::parse($data['check_in']);
-        $checkOut = Carbon::parse($data['check_out']);
-        $days = $checkIn->diffInDays($checkOut);
-
+        $days = $checkInDate->diffInDays($checkOutDate);
         $totalPrice = $days * $pricePerNight;
 
         $data['booking_code'] = strtoupper('BK-' . uniqid());
         $data['total_price'] = $totalPrice;
 
-        Booking::create($data);
+        $booking = Booking::create($data);
         
         return response()->json([
             'status' => 200,

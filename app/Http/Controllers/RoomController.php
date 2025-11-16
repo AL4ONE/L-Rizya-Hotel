@@ -67,6 +67,7 @@ class RoomController extends Controller
             'facilities.*' => 'exists:room_facilities,id',
             'bed_type' => 'nullable|string|max:50',
             'room_size' => 'nullable|string|max:50',
+            'room_type' => 'nullable|in:Small,Medium,Large,VIP',
         ]);
 
         if ($validator->fails()) {
@@ -125,6 +126,7 @@ class RoomController extends Controller
             'facilities.*' => 'exists:room_facilities,id',
             'bed_type' => 'nullable|string|max:50',
             'room_size' => 'nullable|string|max:50',
+            'room_type' => 'nullable|in:Small,Medium,Large,VIP',
         ]);
 
         if ($validator->fails()) {
